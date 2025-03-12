@@ -27,7 +27,7 @@ public class AuthController
     @PostMapping("/register")                // endpoint for user registration
     public String register(@Valid @RequestBody RegisterRequest request)
     {
-        return authService.register(request); // Delegate registration logic to AuthService
+        return authService.register(request); // delegate registration logic to AuthService
     }
 
     @PostMapping("/login")                  // endpoint for user login
