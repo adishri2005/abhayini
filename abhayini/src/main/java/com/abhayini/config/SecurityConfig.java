@@ -27,9 +27,9 @@ public class SecurityConfig
     @Bean // Defines a bean for the security filter chain
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
     {
-        http.csrf(csrf -> csrf.disable())                    // disables CSRF protection
+        http.csrf(csrf -> csrf.ignoringRequestMatchers("/auth/login", "/auth/register"))                  // disables CSRF protection
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // for all
+                        .requestMatchers("/auth/register", "/auth/login").permitAll() // for all
 
                         //.requestMatchers("/auth/**").permitAll()                  // allows unrestricted access to auth endpoints
                         .anyRequest().authenticated()                            // requires authentication for all other requests

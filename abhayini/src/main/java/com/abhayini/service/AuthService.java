@@ -4,13 +4,17 @@
 
 package com.abhayini.service;
 
-import com.abhayini.dto.LoginRequest;
-import com.abhayini.dto.RegisterRequest;
-import com.abhayini.model.User;
-import com.abhayini.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import com.abhayini.dto.LoginRequest;
+import com.abhayini.dto.RegisterRequest;
+import com.abhayini.exception.InvalidCredentialsException;
+import com.abhayini.exception.UserAlreadyExistsException;
+import com.abhayini.model.User;
+import com.abhayini.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Service // indicates that this class is a service component in the Spring context
 @RequiredArgsConstructor // lombok annot to generate a constructor with required args
@@ -22,10 +26,14 @@ public class AuthService
     // method to handle user registration
     public String register(RegisterRequest request)
     {
+        if (request.getRole() == null) {
+            throw new IllegalArgumentException("User role is required");
+        }
         // check if a user with the given email already exists
         if (userRepository.findByEmail(request.getEmail()).isPresent())
         {
-            throw new RuntimeException("User with this email already exists!");
+            throw new UserAlreadyExistsException("User with this email already exists!");
+
         }
         User user = new User();
         user.setUsername(request.getUsername());
@@ -43,12 +51,12 @@ public class AuthService
     {
         // find the user by email
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found!"));
+                .orElseThrow(() -> new RuntimeException("User with this email already exists!"));
 
         // check if the provided password matches the stored hashed password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
         {
-            throw new RuntimeException("Invalid credentials!");
+            throw new InvalidCredentialsException("Invalid credentials!");
         }
         return "Login successful for user: " + user.getUsername();
     }
