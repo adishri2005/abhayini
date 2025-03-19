@@ -10,12 +10,19 @@
 
 package com.abhayini.controller;
 
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.abhayini.dto.AuthResponse;
 import com.abhayini.dto.LoginRequest;
 import com.abhayini.dto.RegisterRequest;
 import com.abhayini.service.AuthService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
 
 @RestController                     // indicates that this class is a REST controller
 @RequestMapping("/auth")         // base url for all endpoints in this controller
@@ -25,14 +32,14 @@ public class AuthController
     private final AuthService authService;              // service to handle authentication logic
 
     @PostMapping("/register")                // endpoint for user registration
-    public String register(@Valid @RequestBody RegisterRequest request)
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request)
     {
-        return authService.register(request); // delegate registration logic to AuthService
+        return ResponseEntity.ok(authService.register(request)); // delegate registration logic to AuthService
     }
 
     @PostMapping("/login")                  // endpoint for user login
-    public String login(@Valid @RequestBody LoginRequest request)
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request)
     {
-        return authService.login(request);              // delegate login logic to AuthService
+        return ResponseEntity.ok(authService.login(request)); // delegate login logic to AuthService
     }
 }

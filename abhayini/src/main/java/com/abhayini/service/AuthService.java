@@ -7,6 +7,7 @@ package com.abhayini.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.abhayini.dto.AuthResponse;
 import com.abhayini.dto.LoginRequest;
 import com.abhayini.dto.RegisterRequest;
 import com.abhayini.exception.InvalidCredentialsException;
@@ -22,9 +23,10 @@ public class AuthService
 {
     private final UserRepository userRepository;          // repo to interact with the user entity
     private final PasswordEncoder passwordEncoder;        // password encoder for hashing passwords
+    private final JwtTokenProvider jwtTokenProvider;      // JWT token provider for generating tokens
 
     // method to handle user registration
-    public String register(RegisterRequest request)
+    public AuthResponse register(RegisterRequest request)
     {
         if (request.getRole() == null) {
             throw new IllegalArgumentException("User role is required");
@@ -33,8 +35,8 @@ public class AuthService
         if (userRepository.findByEmail(request.getEmail()).isPresent())
         {
             throw new UserAlreadyExistsException("User with this email already exists!");
-
         }
+        
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -42,12 +44,16 @@ public class AuthService
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
 
-        userRepository.save(user); // save the new user to the database
-        return "User registered successfully!";
+        user = userRepository.save(user); // save the new user to the database
+        
+        // Generate JWT token for the newly registered user
+        String token = jwtTokenProvider.generateToken(user);
+        
+        return new AuthResponse(token, user.getUsername());
     }
 
     // method to handle user login
-    public String login(LoginRequest request)
+    public AuthResponse login(LoginRequest request)
     {
         // find the user by email
         User user = userRepository.findByEmail(request.getEmail())
@@ -58,6 +64,10 @@ public class AuthService
         {
             throw new InvalidCredentialsException("Invalid credentials!");
         }
-        return "Login successful for user: " + user.getUsername();
+        
+        // Generate JWT token
+        String token = jwtTokenProvider.generateToken(user);
+        
+        return new AuthResponse(token, user.getUsername());
     }
 }
