@@ -51,7 +51,7 @@ public class AuthService
     {
         // find the user by email
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User with this email already exists!"));
+                .orElseThrow(() -> new InvalidCredentialsException("User not found with email: " + request.getEmail()));
 
         // check if the provided password matches the stored hashed password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword()))
