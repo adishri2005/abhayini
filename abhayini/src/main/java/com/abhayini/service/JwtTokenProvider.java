@@ -1,27 +1,26 @@
 package com.abhayini.service;
 
-import com.abhayini.model.User;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
+import java.util.Date;
+
+import javax.crypto.SecretKey;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
-import java.util.Date;
+import com.abhayini.model.User;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret:defaultSecretKey}")
-    private String jwtSecret;
-
     @Value("${jwt.expiration:86400000}") // 24 hours in milliseconds
     private long jwtExpiration;
 
-    private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
-    }
+    // Generate a secure key for HS512 algorithm
+    private final SecretKey jwtKey = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public String generateToken(User user) {
         Date now = new Date();
@@ -33,7 +32,7 @@ public class JwtTokenProvider {
                 .claim("role", user.getRole().name())
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .signWith(jwtKey)
                 .compact();
     }
 }
