@@ -1,7 +1,3 @@
-// Part 1 (for config pkg): security configuration
-// this class is used to configure the password encoder for the application.
-
-// src/main/java/com/abhayini/config/SecurityConfig.java
 package com.abhayini.config;
 
 import org.springframework.context.annotation.Bean;
@@ -13,28 +9,22 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration // Indicates that this class contains Spring configuration
-public class SecurityConfig
-{
+@Configuration
+public class SecurityConfig {
 
-    @Bean // Defines a bean for the password encoder
-    public PasswordEncoder passwordEncoder()
-    {
-
-        return new BCryptPasswordEncoder(); // Returns an instance of BCryptPasswordEncoder
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
-    @Bean // Defines a bean for the security filter chain
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
-    {
-        http.csrf(csrf -> csrf.disable())                    // disables CSRF protection
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/register", "/api/auth/login").permitAll() // for all
-
-                        //.requestMatchers("/auth/**").permitAll()                  // allows unrestricted access to auth endpoints
-                        .anyRequest().authenticated()                            // requires authentication for all other requests
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify2fa").permitAll()
+                        .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults());                         // enables http basic authentication
-        return http.build();                                        // builds the security filter chain
+                .httpBasic(withDefaults());
+        return http.build();
     }
 }
