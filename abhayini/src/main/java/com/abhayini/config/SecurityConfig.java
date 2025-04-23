@@ -34,7 +34,7 @@ public class SecurityConfig {
                         // Allows unauthenticated access to the registration, login, and 2FA verification endpoints.
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/verify2fa").permitAll()
                         // Requires authentication for all other requests.
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // for authentication
                 )
                 // Configures HTTP Basic authentication.
                 .httpBasic(withDefaults());
