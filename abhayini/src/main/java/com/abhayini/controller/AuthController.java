@@ -41,7 +41,6 @@
 
 
 package com.abhayini.controller;
-
 import com.abhayini.dto.LoginRequest;
 import com.abhayini.dto.RegisterRequest;
 import com.abhayini.dto.TwoFactorRequest;
@@ -55,7 +54,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-
     @PostMapping("/register")
     public String register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
@@ -67,7 +65,8 @@ public class AuthController {
     }
 
     @PostMapping("/verify2fa")
-    public String verifyTwoFactor(@Valid @RequestBody TwoFactorRequest request) {
+    public String verifyTwoFactor(@Valid @RequestBody TwoFactorRequest request)
+    {
         return authService.verifyTwoFactor(request.getEmail(), request.getCode());
     }
 }
